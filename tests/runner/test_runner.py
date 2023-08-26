@@ -7,7 +7,7 @@ import subprocess
 
 import pytest
 
-if not (sys.platform == "linux" and sys.version_info.minor >= 7):
+if sys.platform != "linux" or sys.version_info.minor < 7:
     pytest.skip("skipping linux-only 3.7+ tests", allow_module_level=True)
 
 import datapane as dp
@@ -22,7 +22,7 @@ from datapane.runner.typedefs import RunResult
 # disabled for now - may re-enable when we support local
 # running/rendering with our runner calling into user code
 pytestmark = pytest.mark.skipif(
-    not (sys.platform == "linux" and sys.version_info.minor >= 7),
+    sys.platform != "linux" or sys.version_info.minor < 7,
     reason="Only supported on Linux 3.7+",
 )
 
@@ -83,17 +83,16 @@ def mock_report_publish(self, **kwargs):
 
 @mock.patch("datapane.client.api.Script", new=MockScript)
 def _runner(params: SDict, script: Path, sdist: Path = Path(".")) -> RunResult:
-    with mock.patch.object(MockScript, "script", new_callable=mock.PropertyMock) as ep, mock.patch.object(
-        MockScript, "download_pkg"
-    ) as dp:
+    with (mock.patch.object(MockScript, "script", new_callable=mock.PropertyMock) as ep, mock.patch.object(
+            MockScript, "download_pkg"
+        ) as dp):
         # setup script object
         ep.return_value = script
         dp.return_value = sdist
 
         # main fn
         x = RunnerConfig(script_id="ZBAmDk1", config=params)
-        res = m.run_api(x)
-        return res
+        return m.run_api(x)
 
 
 # TODO - fix exception handling stacktraces

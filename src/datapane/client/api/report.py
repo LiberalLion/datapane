@@ -156,7 +156,7 @@ class ReportBlock(ABC):
         Args:
             id: A unique id to reference the block, used when querying blocks via XPath to aid embedding
         """
-        self.id = str(id) if id else f"block-{next(id_count)}"
+        self.id = id if id else f"block-{next(id_count)}"
         # convert attributes, dropping None values
         # TODO - uncomment when 3.8+ only
         # self.attributes = {str(k): v1 for (k, v) in kwargs.items() if (v1 := _conv_attrib(v)) is not None}

@@ -16,7 +16,7 @@ from .utils import log
 
 # TODO - move
 def empty_parameter_spec() -> JList:
-    return list()
+    return []
 
 
 @dc.dataclass

@@ -153,33 +153,28 @@ def setup_script(s: api.Script, env_dir: Path):
 def exec_mod(script_path: Path, init_state: Optional[SDict] = None) -> SDict:
     # a = ast.parse(script, snippet_name, "exec")
     # ast_validation(a)
-    init_state = init_state or dict()
+    init_state = init_state or {}
     globalscope = {
         # "df": single_input,
         # "params": Munch(config),
         # "__builtins__": override_builtins(__import__)
     }
-    globalscope.update(init_state)
+    globalscope |= init_state
 
-    # we're using run_py rather than run_module to ensure same env as running on user's machine locally
-    # we have a script, not a module - must follow script semantics
-    res_scope = runpy.run_path(str(script_path), init_globals=globalscope, run_name=RUN_NAME)
-    return res_scope
+    return runpy.run_path(
+        str(script_path), init_globals=globalscope, run_name=RUN_NAME
+    )
 
 
 def ast_validation(node):
-    for n in ast.walk(node):
-        # TODO: implement check for import statements
-        if isinstance(n, ast.Import):
-            pass
-        if isinstance(n, ast.ImportFrom):
-            pass
+    for _ in ast.walk(node):
+        pass
 
 
 class OverriddenBuiltins(dict):
     def __getitem__(self, name):
         if name in ENVIRON_CONFIG["banned_builtins"]:
-            raise RuntimeError("Illegal builtin {}".format(name))
+            raise RuntimeError(f"Illegal builtin {name}")
         return super().__getitem__(name)
 
 

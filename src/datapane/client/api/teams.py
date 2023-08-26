@@ -154,14 +154,10 @@ class Blob(DPObjectRef, UploadableObjectMixin):
         """
         with DPTmpFile(".obj") as fn:
             do_download_file(self.gcs_signed_url, fn.name)
-            # In the case that the original object was a Python object or bytes-like object,
-            # the downloaded obj will be a pickle which needs to be unpickled.
-            # Otherwise it's a stringified JSON object (e.g. an Altair plot) that can be returned as JSON.
-            if self.content_type == PKL_MIMETYPE:
-                with fn.file.open("rb") as fp:
-                    return pickle.load(fp)
-            else:
+            if self.content_type != PKL_MIMETYPE:
                 return json.loads(fn.file.read_text())
+            with fn.file.open("rb") as fp:
+                return pickle.load(fp)
 
 
 class Variable(DPObjectRef):
@@ -227,7 +223,7 @@ class Script(DPObjectRef):
 
     def run(self, parameters=None, cache=True) -> "Run":
         """(remote) run the given app (cloning if needed?)"""
-        parameters = parameters or dict()
+        parameters = parameters or {}
         return Run.post(script=self.url, parameter_vals=parameters, cache=cache)
 
     def local_run(self, parameters=None) -> "Run":

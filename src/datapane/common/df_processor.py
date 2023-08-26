@@ -18,9 +18,12 @@ def convert_indices(df: pd.DataFrame):
     """
     col_names: List[str] = df.columns.values.tolist()
     if (
-        all([df.index.get_level_values(x).dtype != np.dtype("int64") for x in range(df.index.nlevels)])
+        all(
+            df.index.get_level_values(x).dtype != np.dtype("int64")
+            for x in range(df.index.nlevels)
+        )
         and len(set(df.index.names)) == len(df.index.names)
-        and not any([x in col_names for x in df.index.names])
+        and all(x not in col_names for x in df.index.names)
     ):
         df.reset_index(inplace=True)
 
@@ -61,11 +64,7 @@ def parse_categories(data: pd.DataFrame):
 
         prop_unique = (nunique + 1) / (ser.size + 1)  # + 1 for nan
 
-        if prop_unique <= 0.05:
-            # a lot of redundant information => categories are more compact
-            return True
-
-        return False
+        return prop_unique <= 0.05
 
     def try_to_category(ser: pd.Series) -> pd.Series:
         return ser.astype("category") if criteria(ser) else ser

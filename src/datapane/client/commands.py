@@ -76,14 +76,10 @@ class GlobalCommandHandler(click.Group):
     def __call__(self, *args, **kwargs):
         try:
             return self.main(*args, **kwargs)
-        except utils.IncompatibleVersionError as e:
+        except (utils.IncompatibleVersionError, HTTPError) as e:
             if EXTRA_OUT:
                 log.exception(e)
             failure_msg(str(e))
-        except HTTPError as e:
-            if EXTRA_OUT:
-                log.exception(e)
-            failure_msg(utils.add_help_text(str(e)), do_exit=True)
         except Exception as e:
             if EXTRA_OUT:
                 log.exception(e)
@@ -367,11 +363,7 @@ def report():
 def report_init(name: str, format: str):
     """Initialise a new report"""
 
-    if format == "notebook":
-        template = "report_ipynb"
-    else:
-        template = "report_py"
-
+    template = "report_ipynb" if format == "notebook" else "report_py"
     if len(list(Path(".").glob("dp_report.*"))):
         failure_msg("Found existing project, cancelling", do_exit=True)
 

@@ -42,8 +42,7 @@ def success_msg(msg: str):
 def failure_msg(msg: str, do_exit: bool = False):
     click.secho(msg, fg="red")
     if do_exit:
-        ctx: click.Context = click.get_current_context(silent=True)
-        if ctx:
+        if ctx := click.get_current_context(silent=True):
             ctx.exit(2)
         else:
             exit(2)

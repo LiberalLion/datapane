@@ -26,7 +26,7 @@ print(c_json["HELLO"])
 print("SAMPLE OUTPUT")
 # DP Results & 3rd-party libs
 if dp.Params["p3"]:
-    t = f"""
+    t = """
 hello
 ,
 world!

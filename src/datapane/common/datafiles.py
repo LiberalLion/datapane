@@ -112,12 +112,12 @@ class ArrowFormat(DFFormatter):
     ext = ARROW_EXT
     enum = "ARROW"
 
-    def load_file(fn: str) -> pd.DataFrame:
-        return pa.ipc.open_file(fn).read_pandas()
+    def load_file(self) -> pd.DataFrame:
+        return pa.ipc.open_file(self).read_pandas()
 
-    def save_file(fn: str, df: pd.DataFrame):
+    def save_file(self, df: pd.DataFrame):
         table = convert_df_table(df)
-        write_table(table, fn)
+        write_table(table, self)
 
 
 class CSVFormat(DFFormatter):
@@ -125,23 +125,23 @@ class CSVFormat(DFFormatter):
     ext = ".csv"
     enum = "CSV"
 
-    def load_file(fn: str) -> pd.DataFrame:
+    def load_file(self) -> pd.DataFrame:
 
         try:
-            return pd.read_csv(fn, engine="c", sep=",")
+            return pd.read_csv(self, engine="c", sep=",")
         except UnicodeDecodeError:
-            encoding = guess_encoding(fn)
-            return pd.read_csv(fn, engine="c", sep=",", encoding=encoding)
+            encoding = guess_encoding(self)
+            return pd.read_csv(self, engine="c", sep=",", encoding=encoding)
         except ParserError as e:
             log.warning(f"Error parsing CSV file ({e}), trying python fallback")
             try:
-                return pd.read_csv(fn, engine="python", sep=None)
+                return pd.read_csv(self, engine="python", sep=None)
             except UnicodeDecodeError:
-                encoding = guess_encoding(fn)
-                return pd.read_csv(fn, engine="python", sep=None, encoding=encoding)
+                encoding = guess_encoding(self)
+                return pd.read_csv(self, engine="python", sep=None, encoding=encoding)
 
-    def save_file(fn: str, df: pd.DataFrame):
-        df.to_csv(fn, index=False)
+    def save_file(self, df: pd.DataFrame):
+        df.to_csv(self, index=False)
 
 
 class ExcelFormat(DFFormatter):
@@ -149,11 +149,11 @@ class ExcelFormat(DFFormatter):
     ext = ".xlsx"
     enum = "EXCEL"
 
-    def load_file(fn: str) -> pd.DataFrame:
-        return pd.read_excel(fn, engine="openpyxl")
+    def load_file(self) -> pd.DataFrame:
+        return pd.read_excel(self, engine="openpyxl")
 
-    def save_file(fn: str, df: pd.DataFrame):
-        df.to_excel(fn, index=False, engine="openpyxl")
+    def save_file(self, df: pd.DataFrame):
+        df.to_excel(self, index=False, engine="openpyxl")
 
 
 class DatasetFormats(enum.Enum):

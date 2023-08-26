@@ -12,7 +12,7 @@ import numpy as np
 
 
 def gen_df(dim: int = 4) -> pd.DataFrame:
-    axis = [i for i in range(0, dim)]
+    axis = list(range(0, dim))
     data = {"x": axis, "y": axis}
     return pd.DataFrame.from_dict(data)
 

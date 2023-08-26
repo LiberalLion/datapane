@@ -136,8 +136,9 @@ class DatapaneCfg:
         elif "description" not in raw_config:
             raw_config["description"] = cls.description
 
-        dp_cfg = dacite.from_dict(cls, data=raw_config, config=dacite.Config(cast=[Path]))
-        return dp_cfg
+        return dacite.from_dict(
+            cls, data=raw_config, config=dacite.Config(cast=[Path])
+        )
 
     @classmethod
     def create(cls, **raw_config) -> "DatapaneCfg":
@@ -180,5 +181,4 @@ from unittest.mock import Mock
 get_ipython = Mock()
 """
 
-    script = header + body
-    return script
+    return header + body

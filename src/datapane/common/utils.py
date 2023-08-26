@@ -226,7 +226,7 @@ def walk_path(path: Path) -> t.Iterable[Path]:
 def guess_encoding(fn: str) -> str:
     with open(fn, "rb") as f:
         detector = UniversalDetector()
-        for line in f.readlines():
+        for line in f:
             detector.feed(line)
             if detector.done:
                 break

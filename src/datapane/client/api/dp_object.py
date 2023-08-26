@@ -174,9 +174,7 @@ class DPObjectRef:
         endpoint: t.Optional[str] = cls.endpoint
 
         def process_field(v):
-            if isinstance(v, dict):
-                return json.dumps(v, indent=True)
-            return v
+            return json.dumps(v, indent=True) if isinstance(v, dict) else v
 
         while endpoint:
             r = Resource(endpoint=endpoint)

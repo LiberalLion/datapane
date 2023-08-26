@@ -134,10 +134,7 @@ def _process_res(r: Response, empty_ok: bool = False) -> JSON:
             except ValueError:
                 log.error(pprint.pformat(r.text))
     r.raise_for_status()
-    if empty_ok and not r.content:
-        r_data = {}
-    else:
-        r_data = r.json()
+    r_data = {} if empty_ok and not r.content else r.json()
     return munchify(r_data) if isinstance(r_data, dict) else r_data
 
 
@@ -176,7 +173,7 @@ class Resource:
             raise UnsupportedResourceError(f"{url_parts[1].title()} are part of Datapane for Teams.")
 
     def post(self, params: t.Dict = None, **data: JSON) -> JSON:
-        params = params or dict()
+        params = params or {}
         r = self.session.post(self.url, json=data, params=params, timeout=self.timeout)
         return _process_res(r)
 
@@ -232,7 +229,7 @@ class Resource:
         return _process_res(r)
 
     def patch(self, params: t.Dict = None, **data: JSON) -> JSON:
-        params = params or dict()
+        params = params or {}
         r = self.session.patch(self.url, json=data, params=params, timeout=self.timeout)
         return _process_res(r)
 

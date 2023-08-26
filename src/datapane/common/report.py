@@ -24,8 +24,7 @@ def validate_report_doc(
     # TODO - should remove this debug log at some point
     if log.isEnabledFor(logging.DEBUG):
         log.debug(f"Validating\n{etree.tounicode(xml_doc, pretty_print=True)}")
-    if raise_exception:
-        rng_validator.assertValid(xml_doc)
-        return True
-    else:
+    if not raise_exception:
         return rng_validator.validate(xml_doc)
+    rng_validator.assertValid(xml_doc)
+    return True
